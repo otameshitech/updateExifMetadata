@@ -2,9 +2,9 @@ import sys
 import argparse
 import os
 
-
 import pyexiv2
 import pandas as pd
+import numpy as np
 import datetime as dt
 
 # Get argment
@@ -84,24 +84,25 @@ if __name__ == '__main__':
         metadata['Exif.Photo.DateTimeOriginal'] = dt.strftime("%Y:%m:%d %H:%M:%S")
         metadata['Exif.Photo.DateTimeDigitized'] = dt.strftime("%Y:%m:%d %H:%M:%S")
 
-        # create geotag (latitude and longitude as GPS information).
-        metadata['Exif.GPSInfo.GPSVersionID'] = '2 2 0 0'
+        if not pd.isnull(csvData.loc[num, "latitude"]) and not pd.isnull(csvData.loc[num, "longitude"]):
+            # create geotag (latitude and longitude as GPS information).
+            metadata['Exif.GPSInfo.GPSVersionID'] = '2 2 0 0'
 
-        if csvData.loc[num, "latitude"] > 0:
-            metadata['Exif.GPSInfo.GPSLatitudeRef'] = "N"
-        else:
-            metadata['Exif.GPSInfo.GPSLatitudeRef'] = "S"
-        
-        d, m, s = convDeg2Dms( csvData.loc[num, "latitude"] )
-        metadata['Exif.GPSInfo.GPSLatitude'] = getDmsString( d, m, s )
+            if csvData.loc[num, "latitude"] > 0:
+                metadata['Exif.GPSInfo.GPSLatitudeRef'] = "N"
+            else:
+                metadata['Exif.GPSInfo.GPSLatitudeRef'] = "S"
+            
+            d, m, s = convDeg2Dms( csvData.loc[num, "latitude"] )
+            metadata['Exif.GPSInfo.GPSLatitude'] = getDmsString( d, m, s )
 
-        if csvData.loc[num, "longitude"] > 0:
-            metadata['Exif.GPSInfo.GPSLongitudeRef'] = "E"
-        else:
-            metadata['Exif.GPSInfo.GPSLongitudeRef'] = "W"
+            if csvData.loc[num, "longitude"] > 0:
+                metadata['Exif.GPSInfo.GPSLongitudeRef'] = "E"
+            else:
+                metadata['Exif.GPSInfo.GPSLongitudeRef'] = "W"
 
-        d, m, s = convDeg2Dms( csvData.loc[num, "longitude"] )
-        metadata['Exif.GPSInfo.GPSLongitude'] = getDmsString( d, m, s )
+            d, m, s = convDeg2Dms( csvData.loc[num, "longitude"] )
+            metadata['Exif.GPSInfo.GPSLongitude'] = getDmsString( d, m, s )
 
         #print(metadata)
 
